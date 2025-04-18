@@ -45,4 +45,8 @@ export class UsersService {
       throw new InternalServerErrorException(`Failed to update user ${error}`);
     }
   }
+
+  async getCustomersCount() {
+    return await db.select().from(users).where(eq(users.isAdmin, false));
+  }
 }

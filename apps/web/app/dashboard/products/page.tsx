@@ -1,3 +1,5 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,8 +12,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Plus, Pencil, Trash2 } from "lucide-react";
+import { DataTable } from "./data-table";
+import { columns } from "./columns";
+import { useQuery } from "@tanstack/react-query";
+import { getAll, getProductsCount } from "@/lib/products";
 
 export default function ProductsPage() {
+  const { data, isLoading } = useQuery({
+    queryKey: ["dashboard-products"],
+    queryFn: () => getAll(1, 1),
+  });
+
+  if (isLoading) return <div>Loading...</div>;
+
   return (
     <div className="w-full space-y-6">
       {/* Header */}
@@ -23,61 +36,8 @@ export default function ProductsPage() {
         </Button>
       </div>
 
-      {/* Search Input */}
-      <div className="w-full sm:w-1/3">
-        <Input placeholder="Search products..." />
-      </div>
-
       {/* Product Table */}
-      <Card className="shadow-none">
-        <CardHeader>
-          <CardTitle className="text-xl">Product List</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Price</TableHead>
-                <TableHead>Stock</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow>
-                <TableCell>GMMK Pro</TableCell>
-                <TableCell>Custom</TableCell>
-                <TableCell>$179.99</TableCell>
-                <TableCell>12</TableCell>
-                <TableCell className="space-x-2 text-right">
-                  <Button variant="outline" size="sm">
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button variant="destructive" size="sm">
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Keychron K6</TableCell>
-                <TableCell>Wireless</TableCell>
-                <TableCell>$89.99</TableCell>
-                <TableCell>34</TableCell>
-                <TableCell className="space-x-2 text-right">
-                  <Button variant="outline" size="sm">
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button variant="destructive" size="sm">
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-              {/* More rows can go here */}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      <DataTable columns={columns} data={data?.data?.data.products || []} />
     </div>
   );
 }
